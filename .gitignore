@@ -2,7 +2,7 @@
 .idea/
 .vscode/
 
-# secrets and configuration
+# configuration
 data/
 !data/config.template.json
 
