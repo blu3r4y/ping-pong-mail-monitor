@@ -2,6 +2,8 @@
 
 A small application that sends emails to `oeh.jku.at` addresses and monitors if they are received.
 
+See the live results at [jku-oeh-mail-monitor.mario.ac](http://jku-oeh-mail-monitor.mario.ac/).
+
 ## Deployment
 
 - Place the `credentials.json` into the `data` folder after enabling the GMail API (see [here](https://developers.google.com/gmail/api/quickstart/python)).
