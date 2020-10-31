@@ -1,7 +1,9 @@
 {
-    "from_address": "your-gmail-username@gmail.com",
+    "pings_per_hour": 6,
+    "receive_timeout": 60,
     "targets": [
         "target-user-1@oeh.jku.at",
-        "target-user-2@oeh.jku.at"
+        "target-user-2@oeh.jku.at",
+        "target-user-3@oeh.jku.at"
     ]
 }

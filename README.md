@@ -1,22 +1,26 @@
 # JKU OEH Mail Monitor
 
-A small application that sends emails to `oeh.jku.at` addresses and monitors if they are received.
+A small application that sends mails to `oeh.jku.at` addresses and monitors if they are received.
 
 See the live results at [jku-oeh-mail-monitor.mario.ac](http://jku-oeh-mail-monitor.mario.ac/).
 
 ## Deployment
 
-- Place the `credentials.json` into the `data` folder after enabling the GMail API (see [here](https://developers.google.com/gmail/api/quickstart/python)).
+- You need two GMail accounts ("ping" & "pong"), [create an API key](https://developers.google.com/gmail/api/quickstart/python) for each and store the `credentials.json` to
+  - `data/credentils.ping.json` for the account that sends mails
+  - `data/credentils.pong.json` for the account that receives mails
 - Rename the `config.template.json` to `config.json` and change the parameters accordingly
-  - The `from_address` specifies the sender e-mail address to be used from your account
-  - The `targets` holds a list of e-mail addresses which will be used for monitoring
+  - `pings_per_hour` Amount of mails that shall be sent to each account per hour (maximum: 60)
+  - `receive_timeout` Amount of minutes to wait for an mail to be received again
+  - `targets` A list of mail addresses which will receive mails for monitoring
 
-Then, just use the already pushed [blu3r4y/jku-oeh-mail-monitor](https://hub.docker.com/r/blu3r4y/jku-oeh-mail-monitor) container:
+Finally, just use the already pushed [blu3r4y/jku-oeh-mail-monitor](https://hub.docker.com/r/blu3r4y/jku-oeh-mail-monitor) container
 
 ```bash
 docker run --detach \
     --name jku-oeh-mail-monitor \
     --restart always \
+    -p 30000-30001:30000-30001 \
     --volume /path/to/your/data:/usr/src/data \
     blu3r4y/jku-oeh-mail-monitor
 ```
