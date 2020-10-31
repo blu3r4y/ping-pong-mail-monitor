@@ -11,8 +11,8 @@ from loguru import logger
 
 @logger.catch
 def main():
-    ping = Gmail("../data/credentials.ping.json", "../data/token.ping.pickle", 30000)
-    pong = Gmail("../data/credentials.pong.json", "../data/token.pong.pickle", 30001)
+    ping = Gmail("../data/credentials.ping.json", "../data/token.ping.pickle", port=0)
+    pong = Gmail("../data/credentials.pong.json", "../data/token.pong.pickle", port=0)
     queue = Queue()
 
     while True:

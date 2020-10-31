@@ -1,4 +1,5 @@
 {
+    "auth_method": "console",
     "pings_per_hour": 6,
     "receive_timeout": 60,
     "targets": [

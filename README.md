@@ -10,6 +10,7 @@ See the live results at [jku-oeh-mail-monitor.mario.ac](http://jku-oeh-mail-moni
   - `data/credentils.ping.json` for the account that sends mails
   - `data/credentils.pong.json` for the account that receives mails
 - Rename the `config.template.json` to `config.json` and change the parameters accordingly
+  - `auth_method` Either `server` (opens a local web server that for the OAuth callback - for local development) or `console` (requires console interaction - for production servers)
   - `pings_per_hour` Amount of mails that shall be sent to each account per hour (maximum: 60)
   - `receive_timeout` Amount of minutes to wait for an mail to be received again
   - `targets` A list of mail addresses which will receive mails for monitoring
@@ -20,7 +21,6 @@ Finally, just use the already pushed [blu3r4y/jku-oeh-mail-monitor](https://hub.
 docker run --detach \
     --name jku-oeh-mail-monitor \
     --restart always \
-    -p 30000-30001:30000-30001 \
     --volume /path/to/your/data:/usr/src/data \
     blu3r4y/jku-oeh-mail-monitor
 ```

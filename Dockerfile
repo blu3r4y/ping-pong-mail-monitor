@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 VOLUME ["/usr/src/data"]
 
-EXPOSE 80 30000 30001
+EXPOSE 80
 
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
