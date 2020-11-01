@@ -2,7 +2,7 @@ import base64
 import pickle
 import os.path
 
-from config import config
+import config
 
 from pprint import pprint
 from typing import Optional
@@ -16,7 +16,9 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 
 
 class Gmail:
-    def __init__(self, credentials_path: str, token_path: str, port: int) -> None:
+    def __init__(
+        self, cfg: config.Config, credentials_path: str, token_path: str, auth_port: int
+    ) -> None:
         """
         Initialize the GMail API
 
@@ -24,9 +26,10 @@ class Gmail:
         :param token_path: Path to the stored auth token, i.e. `token.pickle`
         :param port: The port to be opened for the OAuth callback authentication flow
         """
+        self.cfg = cfg
         self.credentials_path = credentials_path
         self.token_path = token_path
-        self.port = port
+        self.auth_port = auth_port
 
         self.service = None
         self.from_address = None
@@ -77,12 +80,12 @@ class Gmail:
                         "https://www.googleapis.com/auth/gmail.modify",
                     ],
                 )
-                if config["auth_method"] == "server":
-                    creds = flow.run_local_server(port=self.port)
-                elif config["auth_method"] == "console":
+                if self.cfg.auth_method == "server":
+                    creds = flow.run_local_server(port=self.auth_port)
+                elif self.cfg.auth_method == "console":
                     creds = flow.run_console()
                 else:
-                    raise ValueError("invalid auth_method '{}'".format(config["auth_method"]))
+                    raise ValueError("invalid auth_method '{}'".format(self.cfg.auth_method))
 
             # save the credentials for the next run
             with open(self.token_path, "wb") as token:

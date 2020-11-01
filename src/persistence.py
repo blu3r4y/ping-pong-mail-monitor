@@ -1,14 +1,15 @@
 import time
 import pickledb
 
-from config import config
+import config
 
 from loguru import logger
 
 
 class Queue:
-    def __init__(self) -> None:
+    def __init__(self, cfg: config.Config) -> None:
         self.db = pickledb.load("../data/queue.json", auto_dump=True)
+        self.cfg = cfg
         self._startup()
 
     def queue(self):
@@ -39,7 +40,7 @@ class Queue:
         latency = int(recv_timestamp - sent_timestamp)
 
         # store latency
-        ldict = "latency:{}".format(target)
+        ldict = self._get_latency_store_key(target)
         self.db.dadd(ldict, (int(sent_timestamp), latency))
 
         # remove this uuid from the worker queue and the dict metadata
@@ -63,11 +64,11 @@ class Queue:
         now_timestamp = time.time() / 60
 
         delta = now_timestamp - (sent_timestamp / 1000 / 60)
-        if delta > config["receive_timeout"]:
+        if delta > self.cfg.receive_timeout:
 
             # store this key as expired
             target = self.db.dget(uuid, "mailbox")
-            ldict = "latency:{}".format(target)
+            ldict = self._get_latency_store_key(target)
             self.db.dadd(ldict, (int(sent_timestamp), -1))
 
             logger.warning(
@@ -86,8 +87,15 @@ class Queue:
             logger.debug("initialized empty queue in pickledb")
 
         # possible create the latency stores
-        for target in config["targets"]:
-            ldict = "latency:{}".format(target)
-            if not self.db.exists(ldict):
-                self.db.dcreate(ldict)
-                logger.debug("initialized empty latency store '{}' in pickledb".format(ldict))
+        for target in self.cfg.targets:
+            self._get_latency_store_key(target)
+
+    def _get_latency_store_key(self, target):
+        ldict = "latency:{}".format(target)
+
+        # possibly create the store if it doesn't exist already
+        if not self.db.exists(ldict):
+            self.db.dcreate(ldict)
+            logger.debug("initialized empty latency store '{}' in pickledb".format(ldict))
+
+        return ldict
