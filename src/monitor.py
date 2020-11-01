@@ -12,7 +12,7 @@ from loguru import logger
 @logger.catch
 def main():
     # initialize the configuration singleton
-    cfg = config.Config("../data/config.json")
+    cfg = config.Config(config.CONFIG_PATH)
     ping = Gmail(cfg, "../data/credentials.ping.json", "../data/token.ping.pickle", auth_port=0)
     pong = Gmail(cfg, "../data/credentials.pong.json", "../data/token.pong.pickle", auth_port=0)
     queue = Queue(cfg)

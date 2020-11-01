@@ -2,6 +2,8 @@ import json
 
 from loguru import logger
 
+CONFIG_PATH = r"../data/config.json"
+
 
 class Config:
     class __ConfigSingleton:
