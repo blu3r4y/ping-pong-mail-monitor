@@ -19,7 +19,7 @@ class Queue:
 
         # track this message
         self.db.dcreate(uuid)
-        self.db.dadd(uuid, ("sent", sent_timestamp))
+        self.db.dadd(uuid, ("sent", int(sent_timestamp)))
         self.db.dadd(uuid, ("mailbox", target))
 
         # and add it to the worker queue
@@ -31,7 +31,7 @@ class Queue:
         uuid = str(uuid)
 
         # track receival of this message
-        self.db.dadd(uuid, ("recv", recv_timestamp))
+        self.db.dadd(uuid, ("recv", int(recv_timestamp)))
 
         # compute latency in milliseconds
         target = self.db.dget(uuid, "mailbox")
@@ -40,7 +40,7 @@ class Queue:
 
         # store latency
         ldict = "latency:{}".format(target)
-        self.db.dadd(ldict, (recv_timestamp, latency))
+        self.db.dadd(ldict, (int(sent_timestamp), latency))
 
         # remove this uuid from the worker queue and the dict metadata
         self.db.lremvalue("queue", uuid)
@@ -57,13 +57,19 @@ class Queue:
         if not self.db.lexists("queue", uuid):
             return
 
-        # email sent timestamp in minutes
-        sent_timestamp = int(self.db.dget(uuid, "sent")) / 1000 / 60
+        # email sent timestamp in ms
+        sent_timestamp = int(self.db.dget(uuid, "sent"))
         # utc now timestamp in minutes
         now_timestamp = time.time() / 60
 
-        delta = now_timestamp - sent_timestamp
+        delta = now_timestamp - (sent_timestamp / 1000 / 60)
         if delta > config["receive_timeout"]:
+
+            # store this key as expired
+            target = self.db.dget(uuid, "mailbox")
+            ldict = "latency:{}".format(target)
+            self.db.dadd(ldict, (int(sent_timestamp), -1))
+
             logger.warning(
                 "expired uuid {} in queue because no mail was received since {} minutes".format(
                     uuid, int(delta)
