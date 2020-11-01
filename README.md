@@ -19,10 +19,19 @@ Finally, just use the already pushed [blu3r4y/jku-oeh-mail-monitor](https://hub.
 
 ```bash
 docker run --detach \
-    --name jku-oeh-mail-monitor \
-    --restart always \
-    --volume /path/to/your/data:/usr/src/data \
-    blu3r4y/jku-oeh-mail-monitor
+  --name jku-oeh-mail-monitor \
+  --restart always \
+  --volume /path/to/your/data:/usr/src/data \
+  blu3r4y/jku-oeh-mail-monitor
 ```
-
 Optionally, build the container yourself with `docker build -t jku-oeh-mail-monitor .`
+
+### Authentication on a Server
+
+To complete the initial authentication flow on a server start the container once like so:
+
+```bash
+sudo docker run --rm -i \
+  --volume ~/data:/usr/src/data \
+  blu3r4y/jku-oeh-mail-monitor /bin/bash -c 'python /usr/src/app/monitor.py'
+```
