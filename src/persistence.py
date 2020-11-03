@@ -85,30 +85,20 @@ class Queue:
                 ldict = self._get_latency_store_key(target, auto_dump=auto_dump)
                 self.db.dadd(ldict, (delta.sent, -1))
 
-                # a dangling uuid is one that already got removed from the queue
-                dangling = True
-
-                # expire uuid from metadata and worker queue
-                self.db.drem(uuid)
+                # expire uuid from worker queue
                 if self.db.lexists("queue", uuid):
                     self.db.lremvalue("queue", uuid)
-                    dangling = False
+
+                # and flag metadata as expired (keep it for forensic reasons)
+                self.db.dadd(uuid, ("expired", "true"))
 
                 logger.warning(
-                    "expired{}uuid {} because no mail was received since {} minutes (limit: {} minutes)".format(
-                        " (dangling) " if dangling else " ",
+                    "expired uuid {} because no mail was received since {} minutes (limit: {} minutes)".format(
                         uuid,
                         delta.minutes_difference,
                         self.cfg.receive_timeout,
                     )
                 )
-
-                if dangling:
-                    logger.error(
-                        "cleaned the dangling metadata for uuid {} from target {} (sent at: {}ms) ".format(
-                            uuid, target, delta.sent
-                        )
-                    )
 
         # check for a dangling uuid in the queue (should never happen)
         elif self.db.lexists("queue", uuid):
