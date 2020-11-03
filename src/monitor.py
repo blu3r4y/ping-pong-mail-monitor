@@ -23,7 +23,7 @@ def main():
         cfg.reload()
 
         # (1) search for pongs
-        for uuid_ in queue.queue().copy():
+        for uuid_ in queue.queue():
             timestamp = pong.receive_uuid(uuid_)
 
             if timestamp is None:
