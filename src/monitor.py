@@ -36,15 +36,13 @@ def main():
             uuid_ = uuid4()
             timestamp = ping.submit_uuid(target, uuid_)
             queue.submit(target, uuid_, timestamp)
-
-        # (3) wait for next round
-        wait_for_next_ping(cfg.pings_per_hour)
+            wait_for_next_ping(cfg.pings_per_hour, len(cfg.targets))
 
 
-def wait_for_next_ping(pings_per_hour):
-    wait_time = max(1, 60 // pings_per_hour)
-    logger.info("waiting {} minutes ...".format(wait_time))
-    sleep(wait_time * 60)
+def wait_for_next_ping(pings_per_hour, num_targets):
+    wait_time = int((max(1, 60 // pings_per_hour) / num_targets) * 60)
+    logger.info("waiting {} seconds ...".format(wait_time))
+    sleep(wait_time)
 
 
 if __name__ == "__main__":

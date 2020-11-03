@@ -11,7 +11,7 @@ See the live results at [jku-oeh-mail-monitor.mario.ac](http://jku-oeh-mail-moni
   - `data/credentils.pong.json` for the account that receives mails
 - Rename the `config.template.json` to `config.json` and change the parameters accordingly
   - `auth_method` Either `server` (opens a local web server that for the OAuth callback - for local development) or `console` (requires console interaction - for production servers)
-  - `pings_per_hour` Amount of mails that shall be sent to each account per hour (maximum: 60)
+  - `pings_per_hour` Amount of mails that shall be sent to each target per hour (maximum: 60)
   - `receive_timeout` Amount of minutes to wait for an mail to be received again
   - `targets` A list of mail addresses which will receive mails for monitoring
 - Furthermore, if you want to use the API, you have to set the `API_TOKEN` string to some value
