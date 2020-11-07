@@ -42,7 +42,7 @@ def create_chart(theme=None):
             go.Scatter(
                 x=exp_x,
                 y=exp_y,
-                name="fails",
+                name="fail",
                 mode="markers",
                 showlegend=False,
                 marker=dict(size=10, color="red"),
