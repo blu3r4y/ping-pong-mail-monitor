@@ -29,14 +29,14 @@ def api():
 
 @app.route("/api", methods=["POST"])
 def api_target_add():
-    email = escape(request.form.get("email"))
-    token = escape(request.form.get("token"))
+    email = str(escape(request.form.get("email")))
+    token = str(escape(request.form.get("token")))
 
     # identify clicked button
     mode = "config"
-    if escape(request.form.get("add")) is not None:
+    if escape(request.form.get("add")) == "":
         mode = "add"
-    if escape(request.form.get("remove")) is not None:
+    if escape(request.form.get("remove")) == "":
         mode = "remove"
 
     # check if the token exists
