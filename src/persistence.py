@@ -24,6 +24,9 @@ class Queue:
         self.cfg = cfg
         self._startup()
 
+    def dump(self):
+        self.db.dump()
+
     def queue(self):
         return self.db.lgetall("queue").copy()
 

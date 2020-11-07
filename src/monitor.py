@@ -37,9 +37,12 @@ def main():
                 timestamp = pong.receive_uuid(uuid_)
 
             if timestamp is None:
-                queue.expire(uuid_)
+                queue.expire(uuid_, auto_dump=False)
             else:
-                queue.receive(uuid_, timestamp)
+                queue.receive(uuid_, timestamp, auto_dump=False)
+
+        # manually dump here because there might where a lot of ids to dump
+        queue.dump()
 
         # (2) send new pings
         for target in cfg.targets:
