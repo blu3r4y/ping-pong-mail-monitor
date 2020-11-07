@@ -1,4 +1,7 @@
 flask
+numpy
+pandas
+plotly
 loguru
 python-dateutil
 google-auth-httplib2
