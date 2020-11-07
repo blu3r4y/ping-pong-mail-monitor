@@ -31,6 +31,7 @@ def main():
         # (1) search for pongs
         for uuid_ in queue.queue():
             with sdk.trace_custom_service("receiveUuid", "MailMonitor"):
+                sdk.add_custom_request_attribute("uuid", uuid_)
                 timestamp = pong.receive_uuid(uuid_)
 
             if timestamp is None:
@@ -42,6 +43,8 @@ def main():
         for target in cfg.targets:
             uuid_ = uuid4()
             with sdk.trace_custom_service("submitUuid", "MailMonitor"):
+                sdk.add_custom_request_attribute("target", target)
+                sdk.add_custom_request_attribute("uuid", uuid_)
                 timestamp = ping.submit_uuid(target, uuid_)
             queue.submit(target, uuid_, timestamp)
             wait_for_next_ping(cfg.pings_per_hour, len(cfg.targets))
