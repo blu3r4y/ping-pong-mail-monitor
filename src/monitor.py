@@ -1,6 +1,7 @@
 from time import sleep
 from uuid import uuid4
 
+import oneagent
 import config
 
 from gmail import Gmail
@@ -11,6 +12,11 @@ from loguru import logger
 
 @logger.catch
 def main():
+    # initialize dynatrace
+    if not oneagent.initialize():
+        logger.error("could not initialize OneAgent SDK")
+    sdk = oneagent.get_sdk()
+
     # initialize the configuration singleton
     cfg = config.Config(config.CONFIG_PATH)
     ping = Gmail(cfg, "../data/credentials.ping.json", "../data/token.ping.pickle", auth_port=0)
@@ -24,7 +30,8 @@ def main():
 
         # (1) search for pongs
         for uuid_ in queue.queue():
-            timestamp = pong.receive_uuid(uuid_)
+            with sdk.trace_custom_service("receiveUuid", "MailMonitor"):
+                timestamp = pong.receive_uuid(uuid_)
 
             if timestamp is None:
                 queue.expire(uuid_)
@@ -34,7 +41,8 @@ def main():
         # (2) send new pings
         for target in cfg.targets:
             uuid_ = uuid4()
-            timestamp = ping.submit_uuid(target, uuid_)
+            with sdk.trace_custom_service("submitUuid", "MailMonitor"):
+                timestamp = ping.submit_uuid(target, uuid_)
             queue.submit(target, uuid_, timestamp)
             wait_for_next_ping(cfg.pings_per_hour, len(cfg.targets))
 

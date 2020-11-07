@@ -3,6 +3,7 @@ numpy
 pandas
 plotly
 loguru
+oneagent-sdk
 python-dateutil
 google-auth-httplib2
 google-auth-oauthlib
