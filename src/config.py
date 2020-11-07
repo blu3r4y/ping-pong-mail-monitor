@@ -3,6 +3,7 @@ import json
 from loguru import logger
 
 CONFIG_PATH = r"../data/config.json"
+QUEUE_PATH =  r"../data/queue.json"
 
 
 class Config:

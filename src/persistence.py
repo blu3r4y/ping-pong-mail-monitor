@@ -20,7 +20,7 @@ class Queue:
     DeltaTuple = namedtuple("DeltaTuple", ["sent", "minutes_difference"])
 
     def __init__(self, cfg: config.Config) -> None:
-        self.db = pickledb.load("../data/queue.json", auto_dump=False)
+        self.db = pickledb.load(config.QUEUE_PATH, auto_dump=False)
         self.cfg = cfg
         self._startup()
 

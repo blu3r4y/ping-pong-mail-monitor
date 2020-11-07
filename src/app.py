@@ -1,6 +1,7 @@
 import os
 import json
 
+from chart import create_chart
 from config import CONFIG_PATH
 
 from pprint import pformat
@@ -15,10 +16,10 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    template = """
-    Not implemented yet.
-    """
-    return template
+    return render_template(
+        "index.njk",
+        plot=create_chart(theme=escape(request.args.get("theme"))),
+    )
 
 
 @app.route("/api")
