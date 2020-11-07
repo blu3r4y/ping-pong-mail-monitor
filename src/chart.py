@@ -77,21 +77,24 @@ def _read_chart_data():
     expired = {}  # stores a view only on the expired mails
 
     for target in targets:
-        df = pd.DataFrame.from_dict(data["latency:" + target], orient="index")
-        df.columns = [target]
+        df_ = pd.DataFrame.from_dict(data["latency:" + target], orient="index")
+        df_.columns = [target]
 
         # convert latency to datetime dtype
-        df.index = pd.to_datetime(df.index, unit="ms")
+        df_.index = pd.to_datetime(df_.index, unit="ms")
 
         # set timeout values to NaN and convert to seconds
-        df.loc[df[target] == -1, target] = np.nan
-        df[target] /= 1000 * 60
+        df_.loc[df_[target] == -1, target] = np.nan
+        df_[target] /= 1000 * 60
 
         # get a view on all the failed mails
-        expired[target] = df.loc[df[target].isnull(), :].copy()
+        expired[target] = df_.loc[df_[target].isnull(), :].copy()
+
+        # sort timestamps (otherwise, plotly will not sort them)
+        df_.sort_index(inplace=True)
 
         # add temporary frame
-        latencies.append(df)
+        latencies.append(df_)
 
     # merge all columns
     df = pd.concat(latencies)
