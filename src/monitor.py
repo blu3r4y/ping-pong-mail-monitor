@@ -14,7 +14,9 @@ from loguru import logger
 def main():
     # initialize dynatrace
     if not oneagent.initialize():
-        logger.error("could not initialize OneAgent SDK")
+        logger.warning("could not initialize OneAgent SDK")
+    else:
+        logger.success("initialized OneAgent SDK")
     sdk = oneagent.get_sdk()
 
     # initialize the configuration singleton
@@ -42,10 +44,12 @@ def main():
         # (2) send new pings
         for target in cfg.targets:
             uuid_ = uuid4()
+
             with sdk.trace_custom_service("submitUuid", "MailMonitor"):
                 sdk.add_custom_request_attribute("target", target)
                 sdk.add_custom_request_attribute("uuid", uuid_)
                 timestamp = ping.submit_uuid(target, uuid_)
+
             queue.submit(target, uuid_, timestamp)
             wait_for_next_ping(cfg.pings_per_hour, len(cfg.targets))
 
