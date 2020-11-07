@@ -69,25 +69,3 @@ def api_target_add():
             json.dump(data, f, indent=4)
 
     return render_template("api.njk", config=pformat(data, indent=4))
-
-
-@app.route("/api/remove/<mail>")
-def target_remove(mail):
-    mail = str(escape(mail))
-
-    if os.getenv("API_TOKEN") is None:
-        return make_response("no API_TOKEN environment variable set", 500)
-    if escape(request.args.get("token")) != os.getenv("API_TOKEN"):
-        return make_response("wrong API_TOKEN", 401)
-
-    # load old configuration
-    with open(CONFIG_PATH, "r") as f:
-        data = json.load(f)
-        if mail in data["targets"]:
-            data["targets"].remove(mail)
-
-    # store new configuration
-    with open(CONFIG_PATH, "w") as f:
-        json.dump(data, f, indent=4)
-
-    return render_template("api.njk", title="JKU OEH Mail Monitor", content=pformat(data, indent=4))
