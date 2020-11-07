@@ -56,7 +56,7 @@ class Queue:
 
         # store latency
         ldict = self._get_latency_store_key(target)
-        self.db.dadd(ldict, (int(sent_timestamp), latency))
+        self.db.dadd(ldict, (str(sent_timestamp), latency))
 
         # remove this uuid from the worker queue and the dict metadata
         self.db.lremvalue("queue", uuid)
@@ -83,7 +83,7 @@ class Queue:
                 # store this key as expired
                 target = self.db.dget(uuid, "mailbox")
                 ldict = self._get_latency_store_key(target, auto_dump=auto_dump)
-                self.db.dadd(ldict, (delta.sent, -1))
+                self.db.dadd(ldict, (str(delta.sent), -1))
 
                 # expire uuid from worker queue
                 if self.db.lexists("queue", uuid):
