@@ -1,0 +1,46 @@
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>ÖH Mail Monitor API"</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+  </head>
+
+  <body class="bg-light">
+    <div class="container mt-5">
+      {% if warning %}
+        <div class="alert alert-danger" role="alert">
+          {{ warning }}
+        </div>
+      {% endif %}
+      <div class="row">
+        <div class="col-sm">
+          <form method="post">
+            <div class="form-group">
+              <label for="email">E-Mail Address</label>
+              <input type="email" class="form-control" name="email">
+            </div>
+            <div class="form-group">
+              <label for="token">API Token</label>
+              <input type="password" class="form-control" name="token">
+            </div>
+            <button type="submit" name="add" class="btn btn-primary">Add Target</button>
+            <button type="submit" name="remove" class="btn btn-danger">Remove Target</button>
+            <button type="submit" name="show" class="btn btn-secondary">Show Config</button>
+          </form>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm">
+          <pre>
+{{ config }}
+</pre>
+        </div>
+      </div>
+    </div>
+
+  </body>
+
+</html>
