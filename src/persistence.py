@@ -121,14 +121,12 @@ class Queue:
         for target in self.cfg.targets:
             self._get_latency_store_key(target, auto_dump=False)
 
-        # possibly clean-up expired uuids
-        for uuid in self.queue():
-            self.expire(uuid, auto_dump=False)
-
-        # possibly clean-up dangling metadata on uuids
+        # possibly re-queue dangling, put not yet expired uuids that are not in the queue
         for key in list(self.db.getall()):
             if self.UUID4_REGEX.match(key):
-                self.expire(key, auto_dump=False)
+                if not self.db.dexists(key, "expired") and not self.db.lexists("queue", key):
+                    self.db.ladd("queue", key)
+                    logger.warning("re-queued dangling uuid {}".format(key))
 
         self.db.dump()
 
