@@ -1,5 +1,7 @@
 import json
 
+from datetime import timedelta
+
 from config import QUEUE_PATH
 
 import numpy as np
@@ -89,6 +91,14 @@ def _read_chart_data():
 
         # get a view on all the failed mails
         expired[target] = df_.loc[df_[target].isnull(), :].copy()
+
+        # insert NaN rows if there is no datapoint recorded
+        # for longer than twice the median distance
+        # to visually indicate an monitoring outage with plotly then
+        diffs = df_.index.to_series().diff()
+        gaps = diffs[diffs >= diffs.median() * 2].index - timedelta(seconds=1)
+        for gap in gaps:
+            df_.loc[gap, target] = np.nan
 
         # sort timestamps (otherwise, plotly will not sort them)
         df_.sort_index(inplace=True)
