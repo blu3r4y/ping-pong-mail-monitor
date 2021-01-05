@@ -12,7 +12,7 @@ from loguru import logger
 
 @logger.catch
 def main():
-    # initialize dynatrace
+    # initialize dynatrace if available
     if not oneagent.initialize():
         logger.warning("could not initialize OneAgent SDK")
     else:
@@ -32,7 +32,7 @@ def main():
 
         # (1) search for pongs
         for uuid_ in queue.queue():
-            with sdk.trace_custom_service("receiveUuid", "MailMonitor"):
+            with sdk.trace_custom_service("receiveUuid", "PingPongMailMonitor"):
                 sdk.add_custom_request_attribute("uuid", uuid_)
                 timestamp = pong.receive_uuid(uuid_)
 
@@ -48,7 +48,7 @@ def main():
         for target in cfg.targets:
             uuid_ = uuid4()
 
-            with sdk.trace_custom_service("submitUuid", "MailMonitor"):
+            with sdk.trace_custom_service("submitUuid", "PingPongMailMonitor"):
                 sdk.add_custom_request_attribute("target", target)
                 sdk.add_custom_request_attribute("uuid", uuid_)
                 timestamp = ping.submit_uuid(target, uuid_)

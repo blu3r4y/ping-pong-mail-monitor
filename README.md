@@ -1,40 +1,50 @@
-# JKU OEH Mail Monitor
+# Ping Pong Mail Monitor
 
-A small application that sends mails to `oeh.jku.at` addresses and monitors if they are received.
-
-See the live results at [jku-oeh-mail-monitor.mario.ac](http://jku-oeh-mail-monitor.mario.ac/).
+A small application that sends mails to one or more addresses and monitors if they are correctly bounced backed to another address.
+Initially inspired to monitor a flaky mail server of the OEH JKU.
 
 ## Deployment
 
-- You need two GMail accounts ("ping" & "pong"), [create an API key](https://developers.google.com/gmail/api/quickstart/python) for each and store the `credentials.json` to
-  - `data/credentils.ping.json` for the account that sends mails
-  - `data/credentils.pong.json` for the account that receives mails
-- Rename the `config.template.json` to `config.json` and change the parameters accordingly
-  - `auth_method` Either `server` (opens a local web server that for the OAuth callback - for local development) or `console` (requires console interaction - for production servers)
-  - `pings_per_hour` Amount of mails that shall be sent to each target per hour (maximum: 60)
-  - `receive_timeout` Amount of minutes to wait for an mail to be received again
-  - `targets` A list of mail addresses which will receive mails for monitoring
-- Furthermore, if you want to use the API, you have to set the `API_TOKEN` string to some value
+First, create two GMail accounts ("ping" & "pong").
+Then, [create an API key](https://developers.google.com/gmail/api/quickstart/python) for each and store the `credentials.json` that you can download from the developer console to
+  - `data/credentils.ping.json` for the account that will send mails
+  - `data/credentils.pong.json` for the account that will receive mails
 
-Finally, just use the already pushed [blu3r4y/jku-oeh-mail-monitor](https://hub.docker.com/r/blu3r4y/jku-oeh-mail-monitor) container
+Next, rename the `config.template.json` to `config.json` and change the parameters accordingly.
+
+| Configuration     | Default   | Description |
+|-------------------|-----------|-------------|
+| `auth_method`     | `console` | Either `server` (opens a local web server for the initial OAuth callback - for local development) or `console` (requires console interaction - for production servers where you can not easily open sockets on the fly) |
+| `pings_per_hour`  | `6`       | Number of mails that shall be sent per target and hour (maximum: `60`) |
+| `receive_timeout` | `1440`    | Minutes to wait for an mail to be received before it is declared as expired |
+| `prefix`          | `#PINGPONGMAILMONITOR#` | Text that is prepended to every subject line in all mails |
+| `targets`         | `[]`      | Mail addresses to which we will shall send mails |
+
+Finally, just use the already pushed [blu3r4y/ping-pong-mail-monitor](https://hub.docker.com/r/blu3r4y/ping-pong-mail-monitor) container like so
 
 ```bash
 docker run --detach \
-  --name jku-oeh-mail-monitor \
+  --name ping-pong-mail-monitor \
   --restart always \
   --volume /path/to/your/data:/usr/src/data \
-  --env API_TOKEN=ARBITRARY-API-TOKEN-STRING \
-  blu3r4y/jku-oeh-mail-monitor
+  --env API_TOKEN=CHANGE-ME-TO-SOMETHING-SECRET \
+  blu3r4y/ping-pong-mail-monitor
 ```
 
-Optionally, build the container yourself with `docker build -t jku-oeh-mail-monitor .`
+Alternatively, build the container yourself with `docker build -t ping-pong-mail-monitor .`
 
 ### Authentication on a Server
 
-To complete the initial authentication flow on a server start the container once like so:
+To complete the initial authentication flow on a server start the container once like so
 
 ```bash
 sudo docker run --rm -i \
   --volume ~/data:/usr/src/data \
-  blu3r4y/jku-oeh-mail-monitor /bin/bash -c 'python /usr/src/app/monitor.py'
+  blu3r4y/ping-pong-mail-monitor /bin/bash -c 'python /usr/src/app/monitor.py'
 ```
+
+This will create tokens in `data/token.ping.pickle` and `/data/token.pong.pickle` on success.
+
+### Web API
+
+To add or remove targets easily, you can access the exposed API on `http://localhost:80/api` as long as you configured the `API_TOKEN` environment variable as well.

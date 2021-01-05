@@ -24,7 +24,7 @@ def index():
 
 @app.route("/api")
 def api():
-    return render_template("api.njk", content="A")
+    return render_template("api.njk")
 
 
 @app.route("/api", methods=["POST"])

@@ -43,7 +43,7 @@ class Gmail:
         :param uuid: The UUID to be sent
         :return: The timestamp in epoch milliseconds when the mail was received on the server
         """
-        message = self._send_mail(recipient, "#JKUOEHMAILMONITOR# {}".format(uuid))
+        message = self._send_mail(recipient, "{} {}".format(self.cfg.prefix, uuid))
         return int(self._get_mail(message["id"])["internalDate"])
 
     def receive_uuid(self, uuid) -> Optional[int]:

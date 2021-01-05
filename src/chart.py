@@ -61,7 +61,7 @@ def create_chart(theme=None):
     fig.update_layout(
         height=None,
         width=None,
-        title_text="ÖH JKU Mail Monitoring (RTT in Minutes - Red Dots are Lost Mails)",
+        title_text="Ping Pong Mail Monitor (RTT in Minutes - Red Dots are Lost Mails)",
         template=theme,
     )
 
