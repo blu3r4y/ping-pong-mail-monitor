@@ -8,6 +8,14 @@ monitor = dict(
     copy_path=True,
 )
 
+# start chart precache worker
+precache = dict(
+    name="precache",
+    cmd="python precache.py",
+    copy_env=True,
+    copy_path=True,
+)
+
 # start flask frontend
 dashboard = dict(
     name="dashboard",
@@ -17,7 +25,7 @@ dashboard = dict(
     copy_path=True,
 )
 
-arbiter = get_arbiter([monitor, dashboard])
+arbiter = get_arbiter([monitor, precache, dashboard])
 try:
     arbiter.start()
 finally:

@@ -1,14 +1,12 @@
 import os
 import json
 
-from chart import create_chart
-from config import CONFIG_PATH
+from config import CONFIG_PATH, CHART_CACHE_PATH
 
 from pprint import pformat
 from markupsafe import escape
 
 from flask import Flask, request, render_template
-from flask.helpers import make_response
 
 
 app = Flask(__name__)
@@ -16,9 +14,12 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
+    with open(CHART_CACHE_PATH) as f:
+        chart = f.read()
+
     return render_template(
         "index.njk",
-        plot=create_chart(theme=escape(request.args.get("theme"))),
+        plot=chart,
     )
 
 

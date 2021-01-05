@@ -1,9 +1,11 @@
 import json
+import os.path
 
 from loguru import logger
 
-CONFIG_PATH = r"../data/config.json"
-QUEUE_PATH =  r"../data/queue.json"
+CONFIG_PATH = os.path.realpath(r"../data/config.json")
+QUEUE_PATH = os.path.realpath(r"../data/queue.json")
+CHART_CACHE_PATH = os.path.realpath(r"../data/chart-cache.json")
 
 
 class Config:
