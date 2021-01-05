@@ -1,5 +1,7 @@
 # Ping Pong Mail Monitor
 
+![Icon](src/static/favicon.png)
+
 A application that sends mails to one or more addresses and monitors if they are correctly bounced backed to another address.
 Initially inspired to monitor a flaky mail server of the OEH JKU.
 
@@ -48,3 +50,7 @@ This will create tokens in `data/token.ping.pickle` and `/data/token.pong.pickle
 ### Web API
 
 To add or remove targets easily, you can access the exposed API on `http://localhost:80/api` as long as you configured the `API_TOKEN` environment variable as well.
+
+## Attribution
+
+Favicon made by [Freepik](https://www.flaticon.com/authors/freepik) from [Flaticon](https://www.flaticon.com/)
