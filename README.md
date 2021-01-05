@@ -1,6 +1,6 @@
 # Ping Pong Mail Monitor
 
-A small application that sends mails to one or more addresses and monitors if they are correctly bounced backed to another address.
+A application that sends mails to one or more addresses and monitors if they are correctly bounced backed to another address.
 Initially inspired to monitor a flaky mail server of the OEH JKU.
 
 ## Deployment

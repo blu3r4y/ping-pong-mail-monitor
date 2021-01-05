@@ -1,5 +1,6 @@
 flask
 numpy
+circus
 pandas
 plotly
 loguru
