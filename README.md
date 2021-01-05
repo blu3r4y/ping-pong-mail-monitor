@@ -1,8 +1,12 @@
 # Ping Pong Mail Monitor
 
+[![License](https://img.shields.io/badge/License-AGPL%203.0-yellow?style=popout-square)](LICENSE.txt)
+[![Docker Pulls](https://img.shields.io/docker/pulls/blu3r4y/ping-pong-mail-monitor.svg?style=popout-square)](https://hub.docker.com/r/blu3r4y/ping-pong-mail-monitor)
+[![Image Size](https://img.shields.io/docker/image-size/blu3r4y/ping-pong-mail-monitor/latest.svg?style=popout-square)](https://hub.docker.com/r/blu3r4y/ping-pong-mail-monitor)
+
 ![Icon](src/static/favicon.png)
 
-A application that sends mails to one or more addresses and monitors if they are correctly bounced backed to another address.
+An application that sends mails to one or more addresses and monitors if they are correctly bounced backed to another address.
 Initially inspired to monitor a flaky mail server of the OEH JKU.
 
 ## Deployment
