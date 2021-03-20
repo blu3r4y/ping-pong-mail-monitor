@@ -31,23 +31,32 @@
         </svg></a>
     <div class="pp-box">
         <div class="pp-row pp-header p-2">
-            <div class="d-flex flex-row align-items-center">
-                <div class="dropdown show p-2">
-                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Select time range
+            <div class="d-flex flex-row align-items-top" style="padding-right:80px;">
+                <div class="p-2">
+                    <a class="btn btn-light btn-block" role="button" href="/expired">
+                        <img src="{{ url_for('static', filename='img/download.svg') }}" class="mr-1" width="16" height="16">
+                        Download all expired mails
                     </a>
+                    <div class="dropdown show btn-block">
+                        <a class="btn btn-primary dropdown-toggle btn-block" href="#" role="button" data-toggle="dropdown">
+                            Select graph time range
+                        </a>
 
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <a class="dropdown-item" href="?range=30">Last 30 days</a>
-                        <a class="dropdown-item" href="?range=60">Last 60 days</a>
-                        <a class="dropdown-item" href="?range=90">Last 90 days</a>
-                        <a class="dropdown-item" href="?range=0">Full range</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="?range=30">Last 30 days</a>
+                            <a class="dropdown-item" href="?range=60">Last 60 days</a>
+                            <a class="dropdown-item" href="?range=90">Last 90 days</a>
+                            <a class="dropdown-item" href="?range=0">Full range</a>
+                        </div>
                     </div>
                 </div>
                 <div class="p-2 w-50">
                     This dashboard shows the latencies of all monitored mailboxes for the last {{ time_range }} days.
-                    The vertical axis shows the total round trip time (RTT) of a single mail (send, bounce, receive).
+                    The vertical axis shows the round trip time (RTT) of a single mail (send, bounce, receive).
                     Red dots indicate lost mails, i.e., mails which we didn't receive back within {{ receive_timeout }} minutes.
+                    The downloadable list is always complete and not affected by the time range selection.
+                    Missing lines in the graph below indicate an outage of the monitoring.
+                    All times are in UTC.
                 </div>
             </div>
         </div>

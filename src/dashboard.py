@@ -1,13 +1,17 @@
 import os
 import json
 
+from datetime import datetime
+from collections import defaultdict
+
 import config
 from chart import create_chart
+from persistence import UUID4_REGEX
 
 from pprint import pformat
 from markupsafe import escape
 
-from flask import Flask, request, render_template
+from flask import Flask, Response, request, render_template
 
 app = Flask(__name__)
 
@@ -37,6 +41,34 @@ def index():
         time_range=time_range,
         receive_timeout=cfg.receive_timeout
     )
+
+
+@app.route("/expired")
+def expired():
+    with open(config.QUEUE_PATH) as f:
+        data = json.load(f)
+
+    report = defaultdict(list)
+
+    # only report expired keys
+    for key in data.keys():
+        if UUID4_REGEX.match(key):
+            if data[key].get("expired", False):
+                # make the export a bit more human-friendly
+                mailbox = data[key]["mailbox"]
+                timestamp = int(data[key]["sent"])
+                report[mailbox].append(
+                    {
+                        "uuid": key,
+                        "sent": str(datetime.fromtimestamp(timestamp / 1000)),
+                        "timestamp": timestamp
+                    }
+                )
+
+    # format a json and download on-the-fly
+    formatted = json.dumps(report, indent=4, sort_keys=True)
+    return Response(formatted, mimetype="application/json",
+                    headers={"Content-Disposition": "attachment;filename=expired.json"})
 
 
 @app.route("/api")

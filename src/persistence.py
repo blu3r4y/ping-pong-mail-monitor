@@ -9,13 +9,13 @@ import config
 import oneagent
 from loguru import logger
 
+# a regex that matches uuid4 strings with and without dashes
+UUID4_REGEX = re.compile(
+    "[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}", re.I
+)
+
 
 class Queue:
-    # a regex that matches uuid4 strings with and without dashes
-    UUID4_REGEX = re.compile(
-        "[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}", re.I
-    )
-
     # a data structure for the delta calculation
     DeltaTuple = namedtuple("DeltaTuple", ["sent", "minutes_difference"])
 
@@ -126,7 +126,7 @@ class Queue:
 
         # possibly re-queue dangling, put not yet expired uuids that are not in the queue
         for key in list(self.db.getall()):
-            if self.UUID4_REGEX.match(key):
+            if UUID4_REGEX.match(key):
                 if not self.db.dexists(key, "expired") and not self.db.lexists("queue", key):
                     self.db.ladd("queue", key)
                     logger.warning("re-queued dangling uuid {}".format(key))
