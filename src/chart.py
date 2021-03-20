@@ -1,5 +1,6 @@
 import json
 
+from time import time
 from datetime import timedelta
 
 from config import QUEUE_PATH
@@ -13,11 +14,15 @@ import plotly.graph_objects as go
 from plotly.utils import PlotlyJSONEncoder
 from plotly.subplots import make_subplots
 
+from loguru import logger
+
 oneagent.initialize()
 sdk = oneagent.get_sdk()
 
 
 def create_chart(theme=None):
+    start_time = time()
+
     if theme is None or theme not in pio.templates:
         theme = "plotly_dark"  # see https://plotly.com/python/templates/
 
@@ -82,6 +87,10 @@ def create_chart(theme=None):
     )
 
     graphJSON = json.dumps(fig, cls=PlotlyJSONEncoder)
+
+    run_time = timedelta(seconds=time() - start_time)
+    logger.info(f"chart computation took {run_time}")
+
     return graphJSON
 
 
@@ -100,6 +109,7 @@ def _read_chart_data():
 
         # convert latency to datetime dtype
         df_.index = pd.to_datetime(df_.index, unit="ms")
+        df_.sort_index(inplace=True)
 
         # set timeout values to NaN and convert to seconds
         df_.loc[df_[target] == -1, target] = np.nan
@@ -111,10 +121,14 @@ def _read_chart_data():
         # insert NaN rows if there is no datapoint recorded
         # for longer than twice the median distance
         # to visually indicate an monitoring outage with plotly then
+        assert df_.index.is_monotonic_increasing
         diffs = df_.index.to_series().diff()
-        gaps = diffs[diffs >= diffs.median() * 2].index - timedelta(seconds=1)
+        gaps = np.flatnonzero(diffs >= diffs.median() * 2)
         for gap in gaps:
-            df_.loc[gap, target] = np.nan
+            # insert an NaN between the last two points that we saw
+            a, b = df_.index[gap - 1], df_.index[gap]
+            midpoint = (b - a) / 2 + a
+            df_.loc[midpoint, target] = np.nan
 
         # sort timestamps (otherwise, plotly will not sort them)
         df_.sort_index(inplace=True)
