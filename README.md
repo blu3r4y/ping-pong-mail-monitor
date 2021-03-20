@@ -45,11 +45,11 @@ To complete the initial authentication flow on a server start the container once
 
 ```bash
 sudo docker run --rm -i \
-  --volume ~/data:/usr/src/data \
+  --volume /path/to/your/data:/usr/src/data \
   blu3r4y/ping-pong-mail-monitor /bin/bash -c 'python /usr/src/app/monitor.py'
 ```
 
-This will create tokens in `data/token.ping.pickle` and `/data/token.pong.pickle` on success.
+This will create tokens in `data/token.ping.pickle` and `data/token.pong.pickle` on success.
 
 ### Web API
 
