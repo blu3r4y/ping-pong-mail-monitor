@@ -62,7 +62,7 @@ html {
 }
 
 .loader {
-  margin: 0 auto;
+  margin: 50px auto;
   border: 6px solid #f3f3f3;
   border-top: 6px solid #555;
   border-radius: 50%;
