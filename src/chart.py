@@ -58,8 +58,9 @@ def create_chart(theme=None):
             row=i + 1,
         )
 
-        # y axis title
-        fig.update_yaxes(title_text="RTT", col=1, row=i + 1)
+        # y axis title and cap upper range to 60 minutes
+        fig.update_yaxes(title_text="RTT", range=[0, min(60, df[target].max())],
+                         col=1, row=i + 1)
 
     # clear height and width for a auto-scaled figure
     # and possibly set a supplied theme (or the default)
