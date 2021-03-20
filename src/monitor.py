@@ -33,8 +33,10 @@ def main():
         # (1) search for pongs
         for uuid_ in queue.queue():
             with sdk.trace_custom_service("receiveUuid", "PingPongMailMonitor"):
-                sdk.add_custom_request_attribute("uuid", uuid_)
                 timestamp = pong.receive_uuid(uuid_)
+
+                sdk.add_custom_request_attribute("uuid", uuid_)
+                sdk.add_custom_request_attribute("timestamp", timestamp)
 
             if timestamp is None:
                 queue.expire(uuid_, auto_dump=False)
@@ -49,9 +51,11 @@ def main():
             uuid_ = uuid4()
 
             with sdk.trace_custom_service("submitUuid", "PingPongMailMonitor"):
+                timestamp = ping.submit_uuid(target, uuid_)
+
                 sdk.add_custom_request_attribute("target", target)
                 sdk.add_custom_request_attribute("uuid", uuid_)
-                timestamp = ping.submit_uuid(target, uuid_)
+                sdk.add_custom_request_attribute("timestamp", timestamp)
 
             queue.submit(target, uuid_, timestamp)
             wait_for_next_ping(cfg.pings_per_hour, len(cfg.targets))

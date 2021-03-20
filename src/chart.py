@@ -4,6 +4,7 @@ from datetime import timedelta
 
 from config import QUEUE_PATH
 
+import oneagent
 import numpy as np
 import pandas as pd
 import plotly.io as pio
@@ -12,12 +13,16 @@ import plotly.graph_objects as go
 from plotly.utils import PlotlyJSONEncoder
 from plotly.subplots import make_subplots
 
+oneagent.initialize()
+sdk = oneagent.get_sdk()
+
 
 def create_chart(theme=None):
     if theme is None or theme not in pio.templates:
         theme = "plotly_dark"  # see https://plotly.com/python/templates/
 
-    data = _read_chart_data()
+    with sdk.trace_custom_service("readChartData", "PingPongMailMonitor"):
+        data = _read_chart_data()
     df = data["df"]
 
     # subplot for each target

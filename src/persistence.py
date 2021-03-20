@@ -6,11 +6,11 @@ from collections import namedtuple
 
 import config
 
+import oneagent
 from loguru import logger
 
 
 class Queue:
-
     # a regex that matches uuid4 strings with and without dashes
     UUID4_REGEX = re.compile(
         "[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}", re.I
@@ -20,12 +20,15 @@ class Queue:
     DeltaTuple = namedtuple("DeltaTuple", ["sent", "minutes_difference"])
 
     def __init__(self, cfg: config.Config) -> None:
+        oneagent.initialize()
         self.db = pickledb.load(config.QUEUE_PATH, auto_dump=False)
         self.cfg = cfg
+        self.sdk = oneagent.get_sdk()
         self._startup()
 
     def dump(self):
-        self.db.dump()
+        with self.sdk.trace_custom_service("dumpQueue", "PingPongMailMonitor"):
+            self.db.dump()
 
     def queue(self):
         return self.db.lgetall("queue").copy()
