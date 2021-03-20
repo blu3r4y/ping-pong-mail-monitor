@@ -58,6 +58,16 @@ def create_chart(theme=None):
             row=i + 1,
         )
 
+        # draw a rectangle around the expired data points (bounded by the previous and next values)
+        # for exp in data["expired"][target].index:
+        #     pre, post = df.index[df.index < exp].to_series(), df.index[df.index > exp].to_series()
+        #     pre = pre.iloc[-1] if len(pre) > 0 else None
+        #     post = post.iloc[0] if len(post) > 0 else None
+        #     if pre is not None and post is not None:
+        #         fig.add_vrect(x0=pre, x1=post,
+        #                       fillcolor="LightSalmon", opacity=0.5,
+        #                       layer="below", line_width=0)
+
         # y axis title and cap upper range to 60 minutes
         fig.update_yaxes(title_text="RTT", range=[0, min(60, df[target].max())],
                          col=1, row=i + 1)
