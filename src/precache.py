@@ -1,28 +1,32 @@
 from time import sleep
 
-from config import CHART_CACHE_PATH
+import config
 
 from chart import create_chart
 
 import oneagent
 from loguru import logger
 
-oneagent.initialize()
-sdk = oneagent.get_sdk()
-
 
 @logger.catch
-def cache(path):
+def cache(path, last_n_days, sdk):
     while True:  # render, store, wait
         with sdk.trace_custom_service("cacheChart", "PingPongMailMonitor"):
-            jzon = create_chart()
+            data = create_chart(last_n_days=last_n_days)
             with open(path, "w") as f:
-                f.write(jzon)
-                logger.success("successfully pre-cached {}".format(path))
+                f.write(data)
+                logger.success(f"successfully pre-cached {path} for last {last_n_days} days")
 
         # wait 15 minutes
         sleep(15 * 60)
 
 
 if __name__ == "__main__":
-    cache(CHART_CACHE_PATH)
+    oneagent.initialize()
+    cfg = config.Config(config.CONFIG_PATH)
+
+    cache(
+        config.CHART_CACHE_PATH,
+        cfg.default_dashboard_days,
+        oneagent.get_sdk()
+    )

@@ -1,0 +1,62 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #111111;
+  color: white;
+}
+
+.pp-box {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+.pp-box .pp-row.pp-header {
+  flex: 0 1 auto;
+}
+
+.pp-box .pp-row.pp-content {
+  flex: 1 1 auto;
+}
+
+.pp-box .pp-row.pp-footer {
+  flex: 0 1 auto;
+}
+
+.js-plotly-plot .plotly .modebar {
+  left: 0px;
+}
+
+.github-corner:hover .octo-arm {
+  animation: octocat-wave 560ms ease-in-out;
+}
+
+@keyframes octocat-wave {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+
+  20%,
+  60% {
+    transform: rotate(-25deg);
+  }
+
+  40%,
+  80% {
+    transform: rotate(10deg);
+  }
+}
+
+@media (max-width: 500px) {
+  .github-corner:hover .octo-arm {
+    animation: none;
+  }
+
+  .github-corner .octo-arm {
+    animation: octocat-wave 560ms ease-in-out;
+  }
+}

@@ -20,14 +20,14 @@ oneagent.initialize()
 sdk = oneagent.get_sdk()
 
 
-def create_chart(theme=None):
+def create_chart(theme=None, last_n_days=None):
     start_time = time()
 
     if theme is None or theme not in pio.templates:
         theme = "plotly_dark"  # see https://plotly.com/python/templates/
 
     with sdk.trace_custom_service("readChartData", "PingPongMailMonitor"):
-        data = _read_chart_data()
+        data = _read_chart_data(last_n_days=last_n_days)
     df = data["df"]
 
     # subplot for each target
@@ -36,7 +36,7 @@ def create_chart(theme=None):
     for i, target in enumerate(data["targets"]):
         # the latency line plot
         fig.add_trace(
-            go.Scatter(
+            go.Scattergl(
                 x=df.index,
                 y=df[target],
                 name=target,
@@ -51,7 +51,7 @@ def create_chart(theme=None):
         exp_x = data["expired"][target].index
         exp_y = np.full(data["expired"][target].shape[0], df[target].median())
         fig.add_trace(
-            go.Scatter(
+            go.Scattergl(
                 x=exp_x,
                 y=exp_y,
                 name="fail",
@@ -82,19 +82,19 @@ def create_chart(theme=None):
     fig.update_layout(
         height=None,
         width=None,
-        title_text="Ping Pong Mail Monitor (RTT in Minutes - Red Dots are Lost Mails)",
+        # title_text="Ping Pong Mail Monitor",
         template=theme,
     )
 
     graphJSON = json.dumps(fig, cls=PlotlyJSONEncoder)
 
     run_time = timedelta(seconds=time() - start_time)
-    logger.info(f"chart computation took {run_time}")
+    logger.info(f"chart computation took {run_time} (for {last_n_days} days)")
 
     return graphJSON
 
 
-def _read_chart_data():
+def _read_chart_data(last_n_days=None):
     with open(QUEUE_PATH) as f:
         data = json.load(f)
 
@@ -139,4 +139,10 @@ def _read_chart_data():
     # merge all columns
     df = pd.concat(latencies)
 
+    # possibly truncate the entire range
+    if last_n_days is not None:
+        cutoff = pd.Timestamp.today() - timedelta(days=last_n_days)
+        df = df[df.index >= cutoff]
+
+    df.sort_index()
     return dict(targets=targets, df=df, expired=expired)

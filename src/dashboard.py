@@ -1,25 +1,41 @@
 import os
 import json
 
-from config import CONFIG_PATH, CHART_CACHE_PATH
+import config
+from chart import create_chart
 
 from pprint import pformat
 from markupsafe import escape
 
 from flask import Flask, request, render_template
 
-
 app = Flask(__name__)
+
+cfg = config.Config(config.CONFIG_PATH)
 
 
 @app.route("/")
 def index():
-    with open(CHART_CACHE_PATH) as f:
-        chart = f.read()
+    try:
+        # try using a custom range selection
+        time_range = int(escape(request.args.get("range")))
+        if time_range <= 0:
+            time_range = None
+    except ValueError:
+        time_range = cfg.default_dashboard_days
+
+    # either serve from the cache or re-compute the entire graph
+    if time_range == cfg.default_dashboard_days:
+        with open(config.CHART_CACHE_PATH) as f:
+            chart = f.read()
+    else:
+        chart = create_chart(last_n_days=time_range)
 
     return render_template(
         "index.njk",
         plot=chart,
+        time_range=time_range,
+        receive_timeout=cfg.receive_timeout
     )
 
 
@@ -29,7 +45,7 @@ def api():
 
 
 @app.route("/api", methods=["POST"])
-def api_target_add():
+def api_post():
     email = str(escape(request.form.get("email")))
     token = str(escape(request.form.get("token")))
 
@@ -55,7 +71,7 @@ def api_target_add():
         return render_template("api.njk", warning="Wrong token supplied"), 401
 
     # load old configuration
-    with open(CONFIG_PATH, "r") as f:
+    with open(config.CONFIG_PATH, "r") as f:
         data = json.load(f)
         if mode == "add":
             if email not in data["targets"]:
@@ -66,7 +82,7 @@ def api_target_add():
 
     # store new configuration
     if mode == "add" or mode == "remove":
-        with open(CONFIG_PATH, "w") as f:
+        with open(config.CONFIG_PATH, "w") as f:
             json.dump(data, f, indent=4)
 
     return render_template("api.njk", config=pformat(data, indent=4))
