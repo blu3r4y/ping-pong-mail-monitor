@@ -52,6 +52,7 @@
             </div>
         </div>
         <div class="pp-row pp-content" id="chart">
+            <div class="loader" id="loader"></div>
             <script>
                 document.addEventListener("DOMContentLoaded", function(){
                     var data = {{ plot | safe}};
@@ -59,6 +60,7 @@
                         responsive: true
                     }
                     Plotly.newPlot('chart', data, {}, config);
+                    document.getElementById("loader").remove();
                 });
             </script>
         </div>
