@@ -34,19 +34,24 @@
             <div class="d-flex flex-row align-items-top" style="padding-right:80px;">
                 <div class="p-2">
                     <a class="btn btn-light btn-block" role="button" href="/expired">
-                        <img src="{{ url_for('static', filename='img/download.svg') }}" class="mr-1" width="16" height="16">
-                        Download all expired mails
+                        <span class="icon">
+                            <img src="{{ url_for('static', filename='img/download.svg') }}" class="mr-1" width="16" height="16" />
+                        </span>
+                        <span class="text">Download all expired mails</span>
                     </a>
                     <div class="dropdown show btn-block">
-                        <a class="btn btn-primary dropdown-toggle btn-block" href="#" role="button" data-toggle="dropdown">
-                            Select graph time range
+                        <a class="btn btn-primary dropdown-toggle btn-block" id="dropdown" href="#" role="button" data-toggle="dropdown">
+                            <span class="icon">
+                                <img src="{{ url_for('static', filename='img/calendar-range.svg') }}" class="mr-1" width="16" height="16" />
+                            </span>
+                            <span class="text">Select graph time range</span>
                         </a>
 
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="?range=30">Last 30 days</a>
-                            <a class="dropdown-item" href="?range=60">Last 60 days</a>
-                            <a class="dropdown-item" href="?range=90">Last 90 days</a>
-                            <a class="dropdown-item" href="?range=0">Full range</a>
+                            <a class="dropdown-item" href="?range=30" onclick="dropdownAnimation()">Last 30 days</a>
+                            <a class="dropdown-item" href="?range=60" onclick="dropdownAnimation()">Last 60 days</a>
+                            <a class="dropdown-item" href="?range=90" onclick="dropdownAnimation()">Last 90 days</a>
+                            <a class="dropdown-item" href="?range=0" onclick="dropdownAnimation()">Full range</a>
                         </div>
                     </div>
                 </div>
@@ -60,16 +65,21 @@
                 </div>
             </div>
         </div>
+        <div class="loader" id="loader"></div>
         <div class="pp-row pp-content" id="chart">
-            <div class="loader" id="loader"></div>
             <script>
+                function dropdownAnimation() {
+                    document.getElementById("dropdown").classList.add("disabled");
+                    document.getElementById("chart").remove();
+                    documents.getElementById("loader").style.display = "block";
+                }
                 document.addEventListener("DOMContentLoaded", function(){
                     var data = {{ plot | safe}};
                     var config = {
                         responsive: true
                     }
                     Plotly.newPlot('chart', data, {}, config);
-                    document.getElementById("loader").remove();
+                    document.getElementById("loader").style.display = "none";
                 });
             </script>
         </div>

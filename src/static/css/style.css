@@ -79,3 +79,9 @@ html {
     transform: rotate(360deg);
   }
 }
+
+.icon,
+.text {
+  vertical-align: middle;
+  display: inline-block;
+}
