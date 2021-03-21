@@ -67,7 +67,7 @@ def main():
         logger.info("total number of pings since start: {} ({} per target)".format(pings, pings_per_target))
 
         # (3) possibly revoke expired pings again
-        if cfg.requeue_expired == "true" and cfg.revoke_expired_per_pings > 0:
+        if cfg.revoke_expired == "true" and cfg.revoke_expired_per_pings > 0:
             if pings_per_target % cfg.revoke_expired_per_pings == 0:
                 with sdk.trace_custom_service("revokeAll", "PingPongMailMonitor"):
                     queue.revoke_all()

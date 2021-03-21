@@ -2,7 +2,7 @@
   "auth_method": "console",
   "pings_per_hour": 6,
   "receive_timeout": 1440,
-  "requeue_expired": "true",
+  "revoke_expired": "true",
   "revoke_expired_per_pings": 300,
   "default_dashboard_days": 30,
   "prefix": "#PINGPONGMAILMONITOR#",

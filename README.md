@@ -27,7 +27,7 @@ Next, rename the `config.template.json` to `config.json` and change the paramete
 | `receive_timeout`          | `1440`                  | Minutes to wait for an mail to be received before it is declared as expired |
 | `prefix`                   | `#PINGPONGMAILMONITOR#` | Text that is prepended to every subject line in all mails |
 | `targets`                  | `[]`                    | Mail addresses to which we will shall send mails |
-| `requeue_expired`          | `true`                  | This will check expired mails again even after the timeout, but only once |
+| `revoke_expired`           | `true`                  | This will check expired mails again even after the timeout, but only once |
 | `revoke_expired_per_pings` | `300`                   | If `requeue_expired` is `true`, the number of pings per target, after which we check expired mails again, once |
 | `default_dashboard_days`   | `30`                    | The number of recent days that will be shown and cached on the dashboard |
 
