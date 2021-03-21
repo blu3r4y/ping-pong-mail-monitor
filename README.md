@@ -60,4 +60,5 @@ To add or remove targets easily, you can access the exposed API on `http://local
 
 ## Attribution
 
-Favicon made by [Freepik](https://www.flaticon.com/authors/freepik) from [Flaticon](https://www.flaticon.com/)
+Favicon made by [Freepik](https://www.flaticon.com/authors/freepik) from [Flaticon](https://www.flaticon.com/).
+Laptop Mockup made by [Rawpixel](https://www.rawpixel.com/) from [Freepik](http://freepik.com/).
