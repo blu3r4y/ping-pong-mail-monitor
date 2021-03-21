@@ -1,4 +1,4 @@
-from time import sleep
+from time import time, sleep
 from uuid import uuid4
 
 import oneagent
@@ -14,7 +14,7 @@ from loguru import logger
 def main():
     # initialize dynatrace if available
     if not oneagent.initialize():
-        logger.warning("could not initialize OneAgent SDK")
+        logger.warning("could not initialize OneAgent SDK, traces will be ignored")
     else:
         logger.success("initialized OneAgent SDK")
     sdk = oneagent.get_sdk()
@@ -24,6 +24,8 @@ def main():
     ping = Gmail(cfg, "../data/credentials.ping.json", "../data/token.ping.pickle", auth_port=0)
     pong = Gmail(cfg, "../data/credentials.pong.json", "../data/token.pong.pickle", auth_port=0)
     queue = Queue(cfg)
+
+    pings = 0
 
     while True:
 
@@ -58,7 +60,17 @@ def main():
                 sdk.add_custom_request_attribute("timestamp", timestamp)
 
             queue.submit(target, uuid_, timestamp)
+            pings += 1
             wait_for_next_ping(cfg.pings_per_hour, len(cfg.targets))
+
+        pings_per_target = pings // max(1, len(cfg.targets))
+        logger.info("total number of pings since start: {} ({} per target)".format(pings, pings_per_target))
+
+        # (3) possibly revoke expired pings again
+        if cfg.requeue_expired == "true" and cfg.revoke_expired_per_pings > 0:
+            if pings_per_target % cfg.revoke_expired_per_pings == 0:
+                with sdk.trace_custom_service("revokeAll", "PingPongMailMonitor"):
+                    queue.revoke_all()
 
 
 def wait_for_next_ping(pings_per_hour, num_targets):

@@ -117,6 +117,28 @@ class Queue:
         if auto_dump:
             self.db.dump()
 
+    def revoke(self, uuid, auto_dump=True):
+        uuid = str(uuid)
+
+        # re-add this to the queue (if it isn't in there already)
+        if not self.db.lexists("queue", uuid):
+            self.db.ladd("queue", uuid)
+
+        # unset the expired flag
+        self.db.dadd(uuid, ("expired", "false"))
+        logger.info("re-queued already expired uuid {}".format(uuid))
+
+        if auto_dump:
+            self.db.dump()
+
+    def revoke_all(self):
+        for key in list(self.db.getall()):
+            if UUID4_REGEX.match(key):
+                if self.db.dexists(key, "expired") and self.db.dget(key, "expired") == "true":
+                    self.revoke(key, auto_dump=False)
+
+        self.db.dump()
+
     def _startup(self):
         # possibly create the worker queue
         if not self.db.exists("queue"):

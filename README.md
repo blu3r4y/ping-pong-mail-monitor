@@ -20,14 +20,16 @@ Then, [create an API key](https://developers.google.com/gmail/api/quickstart/pyt
 
 Next, rename the `config.template.json` to `config.json` and change the parameters accordingly.
 
-| Configuration            | Default                 | Description |
-|--------------------------|-------------------------|-------------|
-| `auth_method`            | `console`               | Either `server` (opens a local web server for the initial OAuth callback - for local development) or `console` (requires console interaction - for production servers where you can not easily open sockets on the fly) |
-| `pings_per_hour`         | `6`                     | Number of mails that shall be sent per target and hour (maximum: `60`) |
-| `receive_timeout`        | `1440`                  | Minutes to wait for an mail to be received before it is declared as expired |
-| `prefix`                 | `#PINGPONGMAILMONITOR#` | Text that is prepended to every subject line in all mails |
-| `targets`                | `[]`                    | Mail addresses to which we will shall send mails |
-| `default_dashboard_days` | `30`                    | The number of recent days that will be shown and cached on the dashboard |
+| Configuration              | Default                 | Description |
+|----------------------------|-------------------------|-------------|
+| `auth_method`              | `console`               | Either `server` (opens a local web server for the initial OAuth callback - for local development) or `console` (requires console interaction - for production servers where you can not easily open sockets on the fly) |
+| `pings_per_hour`           | `6`                     | Number of mails that shall be sent per target and hour (maximum: `60`) |
+| `receive_timeout`          | `1440`                  | Minutes to wait for an mail to be received before it is declared as expired |
+| `prefix`                   | `#PINGPONGMAILMONITOR#` | Text that is prepended to every subject line in all mails |
+| `targets`                  | `[]`                    | Mail addresses to which we will shall send mails |
+| `requeue_expired`          | `true`                  | This will check expired mails again even after the timeout, but only once |
+| `revoke_expired_per_pings` | `300`                   | If `requeue_expired` is `true`, the number of pings per target, after which we check expired mails again, once |
+| `default_dashboard_days`   | `30`                    | The number of recent days that will be shown and cached on the dashboard |
 
 Finally, just use the already pushed [blu3r4y/ping-pong-mail-monitor](https://hub.docker.com/r/blu3r4y/ping-pong-mail-monitor) container like so
 
