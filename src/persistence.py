@@ -50,7 +50,7 @@ class Queue:
         logger.info("PING -> {} -> {} (at: {}ms)".format(uuid, target, sent_timestamp))
 
         if auto_dump:
-            self.db.dump()
+            self.dump()
 
     def receive(self, uuid, recv_timestamp, auto_dump=True):
         uuid = str(uuid)
@@ -78,7 +78,7 @@ class Queue:
         )
 
         if auto_dump:
-            self.db.dump()
+            self.dump()
 
     def expire(self, uuid, auto_dump=True):
         uuid = str(uuid)
@@ -115,7 +115,7 @@ class Queue:
             logger.error("removed dangling uuid {} from queue".format(uuid))
 
         if auto_dump:
-            self.db.dump()
+            self.dump()
 
     def revoke(self, uuid, auto_dump=True):
         uuid = str(uuid)
@@ -129,7 +129,7 @@ class Queue:
         logger.info("re-queued already expired uuid {}".format(uuid))
 
         if auto_dump:
-            self.db.dump()
+            self.dump()
 
     def revoke_all(self):
         for key in list(self.db.getall()):
@@ -137,7 +137,7 @@ class Queue:
                 if self.db.dexists(key, "expired") and self.db.dget(key, "expired") == "true":
                     self.revoke(key, auto_dump=False)
 
-        self.db.dump()
+        self.dump()
 
     def _startup(self):
         # possibly create the worker queue
@@ -156,7 +156,7 @@ class Queue:
                     self.db.ladd("queue", key)
                     logger.warning("re-queued dangling uuid {}".format(key))
 
-        self.db.dump()
+        self.dump()
 
     def _get_latency_store_key(self, target, auto_dump=True):
         ldict = "latency:{}".format(target)
@@ -167,7 +167,7 @@ class Queue:
             logger.debug("initialized empty latency store '{}' in pickledb".format(ldict))
 
         if auto_dump:
-            self.db.dump()
+            self.dump()
 
         return ldict
 
