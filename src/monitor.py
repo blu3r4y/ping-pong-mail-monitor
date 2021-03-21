@@ -64,7 +64,7 @@ def main():
             wait_for_next_ping(cfg.pings_per_hour, len(cfg.targets))
 
         pings_per_target = pings // max(1, len(cfg.targets))
-        logger.info("total number of pings since start: {} ({} per target)".format(pings, pings_per_target))
+        logger.debug("total number of pings since start: {} ({} per target)".format(pings, pings_per_target))
 
         # (3) possibly revoke expired pings again
         if cfg.revoke_expired == "true" and cfg.revoke_expired_per_pings > 0:
