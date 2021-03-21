@@ -2,6 +2,7 @@ import re
 import time
 import pickledb
 
+from shutil import copyfile
 from collections import namedtuple
 
 import config
@@ -27,7 +28,9 @@ class Queue:
         self._startup()
 
     def dump(self):
+        copyfile(config.QUEUE_PATH, config.QUEUE_BAK_PATH)  # backup first
         with self.sdk.trace_custom_service("dumpQueue", "PingPongMailMonitor"):
+            logger.info("saving queue to disk now ...")
             self.db.dump()
 
     def queue(self):

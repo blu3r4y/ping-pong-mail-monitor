@@ -5,6 +5,7 @@ from loguru import logger
 
 CONFIG_PATH = os.path.realpath(r"../data/config.json")
 QUEUE_PATH = os.path.realpath(r"../data/queue.json")
+QUEUE_BAK_PATH = os.path.realpath(r"../data/queue.bak.json")
 CHART_CACHE_PATH = os.path.realpath(r"../data/chart-cache.json")
 
 
