@@ -36,7 +36,7 @@ def index():
         chart = create_chart(last_n_days=time_range)
 
     return render_template(
-        "index.njk",
+        "index.html",
         plot=chart,
         time_range=time_range,
         receive_timeout=cfg.receive_timeout
@@ -73,7 +73,7 @@ def expired():
 
 @app.route("/api")
 def api():
-    return render_template("api.njk")
+    return render_template("api.html")
 
 
 @app.route("/api", methods=["POST"])
@@ -92,7 +92,7 @@ def api_post():
     if os.getenv("API_TOKEN") is None:
         return (
             render_template(
-                "api.njk",
+                "api.html",
                 warning="No API_TOKEN environment variable was set in the app",
             ),
             500,
@@ -100,7 +100,7 @@ def api_post():
 
     # check if the token matches
     if token != os.getenv("API_TOKEN"):
-        return render_template("api.njk", warning="Wrong token supplied"), 401
+        return render_template("api.html", warning="Wrong token supplied"), 401
 
     # load old configuration
     with open(config.CONFIG_PATH, "r") as f:
@@ -117,4 +117,4 @@ def api_post():
         with open(config.CONFIG_PATH, "w") as f:
             json.dump(data, f, indent=4)
 
-    return render_template("api.njk", config=pformat(data, indent=4))
+    return render_template("api.html", config_string=pformat(data, indent=4))

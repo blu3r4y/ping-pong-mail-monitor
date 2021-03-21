@@ -8,7 +8,6 @@ from config import QUEUE_PATH
 import oneagent
 import numpy as np
 import pandas as pd
-import plotly.io as pio
 import plotly.graph_objects as go
 
 from plotly.utils import PlotlyJSONEncoder
@@ -20,78 +19,58 @@ oneagent.initialize()
 sdk = oneagent.get_sdk()
 
 
-def create_chart(theme=None, last_n_days=None):
-    start_time = time()
-
-    if theme is None or theme not in pio.templates:
-        theme = "plotly_dark"  # see https://plotly.com/python/templates/
+def create_chart(last_n_days=None):
+    render_start = time()
 
     with sdk.trace_custom_service("readChartData", "PingPongMailMonitor"):
         data = _read_chart_data(last_n_days=last_n_days)
     df = data["df"]
 
-    # subplot for each target
-    fig = make_subplots(rows=len(data["targets"]), cols=1, shared_xaxes=True, vertical_spacing=0.01)
+    fig = make_subplots(
+        rows=len(data["targets"]), cols=1,
+        shared_xaxes=True, vertical_spacing=0.01
+    )
 
     for i, target in enumerate(data["targets"]):
         # the latency line plot
         fig.add_trace(
             go.Scattergl(
-                x=df.index,
-                y=df[target],
-                name=target,
-                mode="lines",
-                connectgaps=False,
-            ),
-            col=1,
-            row=i + 1,
+                x=df.index, y=df[target], name=target,
+                mode="lines", connectgaps=False,
+            ), col=1, row=i + 1,
         )
 
         # the expired mails scatter dots (place the dot at the median latency)
-        exp_x = data["expired"][target].index
-        exp_y = np.full(data["expired"][target].shape[0], df[target].median())
+        expired_times = data["expired"][target].index
+        expired_median = np.full(data["expired"][target].shape[0], df[target].median())
         fig.add_trace(
             go.Scattergl(
-                x=exp_x,
-                y=exp_y,
-                name="fail",
-                mode="markers",
-                showlegend=False,
-                marker=dict(size=10, color="red"),
-            ),
-            col=1,
-            row=i + 1,
+                x=expired_times, y=expired_median, name="expired mail",
+                mode="markers", showlegend=False, marker=dict(size=10, color="red"),
+            ), col=1, row=i + 1,
         )
 
-        # draw a rectangle around the expired data points (bounded by the previous and next values)
-        # for exp in data["expired"][target].index:
-        #     pre, post = df.index[df.index < exp].to_series(), df.index[df.index > exp].to_series()
-        #     pre = pre.iloc[-1] if len(pre) > 0 else None
-        #     post = post.iloc[0] if len(post) > 0 else None
-        #     if pre is not None and post is not None:
-        #         fig.add_vrect(x0=pre, x1=post,
-        #                       fillcolor="LightSalmon", opacity=0.5,
-        #                       layer="below", line_width=0)
-
         # y axis title and cap upper range to 60 minutes
-        fig.update_yaxes(title_text="RTT", range=[0, min(60, df[target].max())],
-                         col=1, row=i + 1)
+        fig.update_yaxes(title_text="RTT", col=1, row=i + 1,
+                         range=[0, min(60, df[target].max())])
+
+        # center the legend at the bottom
+        fig.update_layout(legend=dict(
+            orientation="h",
+            xanchor="center", yanchor="top",
+            x=0.5, y=-0.05))
 
     # clear height and width for a auto-scaled figure
-    # and possibly set a supplied theme (or the default)
     fig.update_layout(
-        height=None,
-        width=None,
-        # title_text="Ping Pong Mail Monitor",
-        template=theme,
-    )
+        height=None, width=None,
+        template="plotly_dark")
 
-    graphJSON = json.dumps(fig, cls=PlotlyJSONEncoder)
+    graph_json = json.dumps(fig, cls=PlotlyJSONEncoder)
 
-    run_time = timedelta(seconds=time() - start_time)
-    logger.info(f"chart computation took {run_time} (for {last_n_days} days)")
+    render_time = timedelta(seconds=time() - render_start)
+    logger.info(f"chart computation took {render_time} (for {last_n_days} days)")
 
-    return graphJSON
+    return graph_json
 
 
 def _read_chart_data(last_n_days=None):

@@ -1,0 +1,81 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8"/>
+    <title>PingPong MailMonitor</title>
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-icons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="text-light">
+
+<a href="https://github.com/blu3r4y/ping-pong-mail-monitor" class="github-corner" aria-label="View source on GitHub">
+    <img alt="github" src="{{ url_for('static', filename='img/github-corner.svg') }}"
+         type="image/svg+xml" width="80" height="80"/>
+</a>
+<div class="d-flex flex-column p-2 h-100">
+    <div class="p-3">
+        <div class="d-flex flex-row align-items-top">
+            <div>
+                <a class="btn btn-light btn-block text-left" role="button" href="expired">
+                    <i class="bi bi-download pr-2"></i> Download all expired mails
+                </a>
+                <div class="dropdown show btn-block">
+                    <a class="btn btn-primary dropdown-toggle btn-block text-left" id="time-range-dropdown"
+                       href="#" role="button" data-toggle="dropdown">
+                        <i class="bi bi-calendar-range pr-2"></i> Select graph time range
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="?range=30" onclick="animateDropdown()">Last 30 days</a>
+                        <a class="dropdown-item" href="?range=60" onclick="animateDropdown()">Last 60 days</a>
+                        <a class="dropdown-item" href="?range=90" onclick="animateDropdown()">Last 90 days</a>
+                        <a class="dropdown-item" href="?range=0" onclick="animateDropdown()">Full range</a>
+                    </div>
+                </div>
+            </div>
+            <div class="ml-4 w-50">
+                This dashboard shows the latencies of all monitored mailboxes for the last {{ time_range }} days.
+                The vertical axis shows the round trip time (RTT) of a single mail (send, bounce, receive).
+                Red dots indicate lost mails, i.e., mails which we didn't receive back within {{ receive_timeout }}
+                minutes.
+                The downloadable list is always complete and not affected by the time range selection.
+                Missing lines in the graph below indicate an outage of the monitoring.
+                All times are in UTC.
+            </div>
+        </div>
+    </div>
+    <div class="p-3" id="spinner-box">
+        <div class="spinner"></div>
+    </div>
+    <div class="pt-3 h-100 flex-grow-1" id="chart-box">
+        <script type="text/javascript">
+            function animateDropdown() {
+                // remove the chart and show the loading spinner while we reload the page
+                document.getElementById("time-range-dropdown").classList.add("disabled");
+                document.getElementById("chart-box").remove();
+                document.getElementById("spinner-box").style.display = "block";
+            }
+
+            function renderChart() {
+                // @formatter:off
+                const data = {{ plot | safe}};
+                // @formatter:on
+                const config = {
+                    responsive: true
+                }
+                Plotly.newPlot("chart-box", data, {}, config);
+                document.getElementById("spinner-box").style.display = "none";
+            }
+
+            document.addEventListener("DOMContentLoaded", renderChart);
+        </script>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/jquery-3.6.0.slim.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/plotly-latest.min.js') }}"></script>
+</body>
+</html>
