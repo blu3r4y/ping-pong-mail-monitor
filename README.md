@@ -1,8 +1,11 @@
 # Ping Pong Mail Monitor
 
-[![License](https://img.shields.io/badge/License-AGPL%203.0-yellow?style=popout-square)](LICENSE.txt)
+[![AGPL 3.0 License](https://img.shields.io/badge/License-AGPL%203.0-yellow?style=popout-square)](LICENSE.txt)
+[![GitHub Latest Release](https://img.shields.io/github/v/release/blu3r4y/ping-pong-mail-monitor?style=popout-square)](https://github.com/blu3r4y/ping-pong-mail-monitor/releases/latest)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/blu3r4y/ping-pong-mail-monitor/build-container-images?style=popout-square)](https://github.com/blu3r4y/ping-pong-mail-monitor/actions)
 [![Docker Pulls](https://img.shields.io/docker/pulls/blu3r4y/ping-pong-mail-monitor.svg?style=popout-square)](https://hub.docker.com/r/blu3r4y/ping-pong-mail-monitor)
-[![Image Size](https://img.shields.io/docker/image-size/blu3r4y/ping-pong-mail-monitor/latest.svg?style=popout-square)](https://hub.docker.com/r/blu3r4y/ping-pong-mail-monitor)
+[![Docker Image Size](https://img.shields.io/docker/image-size/blu3r4y/ping-pong-mail-monitor?style=popout-square)](https://hub.docker.com/r/blu3r4y/ping-pong-mail-monitor)
+![Supported Platforms](https://img.shields.io/badge/platforms-amd64%20%7C%20arm64-lightgrey?style=popout-square)
 
 ![Icon](src/static/favicon.png)
 
@@ -11,14 +14,13 @@ Initially inspired to monitor a flaky mail server of the OEH JKU.
 
 ![Dashboard Screenshot](dashboard.png)
 
-## Deployment
+## Configuration and Deployment
 
-First, create two GMail accounts ("ping" & "pong").
-Then, [create an API key](https://developers.google.com/gmail/api/quickstart/python) for each and store the `credentials.json` that you can download from the developer console to
-  - `data/credentils.ping.json` for the account that will send mails
-  - `data/credentils.pong.json` for the account that will receive mails
-
-Next, rename the `config.template.json` to `config.json` and change the parameters accordingly.
+1. Create two GMail accounts ("ping" & "pong").
+2. [Create an API key](https://developers.google.com/gmail/api/quickstart/python) for each and store the `credentials.json` that you can download from the developer console to
+    - `data/credentils.ping.json` for the account that will send mails
+    - `data/credentils.pong.json` for the account that will receive mails
+3. Next, rename the `config.template.json` to `config.json` and change the parameters accordingly.
 
 | Configuration              | Default                 | Description |
 |----------------------------|-------------------------|-------------|
@@ -31,18 +33,25 @@ Next, rename the `config.template.json` to `config.json` and change the paramete
 | `revoke_expired_per_pings` | `300`                   | If `requeue_expired` is `true`, the number of pings per target, after which we check expired mails again, once |
 | `default_dashboard_days`   | `30`                    | The number of recent days that will be shown and cached on the dashboard |
 
-Finally, just use the already pushed [blu3r4y/ping-pong-mail-monitor](https://hub.docker.com/r/blu3r4y/ping-pong-mail-monitor) container like so
+Finally, run the [blu3r4y/ping-pong-mail-monitor](https://hub.docker.com/r/blu3r4y/ping-pong-mail-monitor) container and access the dashboard at http://localhost:8080
 
 ```bash
 docker run --detach \
-  --name ping-pong-mail-monitor \
-  --restart always \
-  --volume /path/to/your/data:/usr/src/data \
-  --env API_TOKEN=CHANGE-ME-TO-SOMETHING-SECRET \
-  blu3r4y/ping-pong-mail-monitor
+    --name ping-pong-mail-monitor \
+    --restart always \
+    -p 8080:80 \
+    -v /path/to/your/data:/usr/src/data \
+    -e API_TOKEN=CHANGE-ME-TO-SOMETHING-SECRET \
+    blu3r4y/ping-pong-mail-monitor
 ```
 
-Alternatively, build the container yourself with `docker build -t ping-pong-mail-monitor .`
+You can also use the supplied [`docker-compose.yml`](docker-compose.yml)
+
+    docker-compose up -d
+
+Alternatively, build the container yourself with
+
+    docker build -t ping-pong-mail-monitor .
 
 ### Authentication on a Server
 
@@ -50,15 +59,15 @@ To complete the initial authentication flow on a server start the container once
 
 ```bash
 sudo docker run --rm -i \
-  --volume /path/to/your/data:/usr/src/data \
-  blu3r4y/ping-pong-mail-monitor /bin/bash -c 'python /usr/src/app/monitor.py'
+    --volume /path/to/your/data:/usr/src/data \
+    blu3r4y/ping-pong-mail-monitor /bin/bash -c 'python /usr/src/app/monitor.py'
 ```
 
 This will create tokens in `data/token.ping.pickle` and `data/token.pong.pickle` on success.
 
 ### Web API
 
-To add or remove targets easily, you can access the exposed API on `http://localhost:80/api` as long as you configured the `API_TOKEN` environment variable as well.
+To add or remove targets easily, you can access the exposed API on http://localhost:80/api as long as you configured the `API_TOKEN` environment variable as well.
 
 ## Attribution
 

@@ -1,0 +1,12 @@
+version: "3"
+services:
+  ping-pong-mail-monitor:
+    container_name: ping-pong-mail-monitor
+    image: "blu3r4y/ping-pong-mail-monitor"
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      API_TOKEN: ${PINGPONG_API_TOKEN}
+    volumes:
+      - "/srv/ping-pong-mail-monitor:/usr/src/data"
