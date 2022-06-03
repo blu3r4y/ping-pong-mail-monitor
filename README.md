@@ -14,10 +14,10 @@ Initially inspired to monitor a flaky mail server of the OEH JKU.
 
 ![Dashboard Screenshot](dashboard.png)
 
-## Configuration and Deployment
+## Configuration and deployment
 
 1. Create two GMail accounts ("ping" & "pong").
-2. [Create an API key](https://developers.google.com/gmail/api/quickstart/python) for each and store the `credentials.json` that you can download from the developer console to
+2. Create an OAuth API credentials (see below) for each and store the `credentials.json` that you can download from the developer console to
     - `data/credentils.ping.json` for the account that will send mails
     - `data/credentils.pong.json` for the account that will receive mails
 3. Next, rename the `config.template.json` to `config.json` and change the parameters accordingly.
@@ -53,17 +53,33 @@ Alternatively, build the container yourself with
 
     docker build -t ping-pong-mail-monitor .
 
-### Authentication on a Server
+### Initial authentication flow on a server
 
 To complete the initial authentication flow on a server start the container once like so
 
 ```bash
-sudo docker run --rm -i \
+sudo docker run --rm -it \
     --volume /path/to/your/data:/usr/src/data \
     blu3r4y/ping-pong-mail-monitor /bin/bash -c 'python /usr/src/app/monitor.py'
 ```
 
 This will create tokens in `data/token.ping.pickle` and `data/token.pong.pickle` on success.
+
+### OAuth API Credentials
+
+For each of the two GMail accounts ("ping" & "pong") create OAuth API credentials in the Google Cloud Console.
+
+1. If you haven't already, create a new project
+2. Go to the "APIs & Services" section
+3. Go to the "Credentials" section
+4. Click on "Create credentials" and select "OAuth client ID" with type "Desktop app"
+
+Next, we need to change the OAuth consent screen to be in testing mode.
+Access to sensitive scopes like GMail usually require a special verifiction process, unless you are in testing mode.
+
+1. Go to the "OAuth consent screen" section
+2. Ensure that the "Publishing status" is set to "Testing"
+3. Invite your GMail user (usually the same as the account you are using) as a test user to the project
 
 ### Web API
 

@@ -71,9 +71,11 @@ class Gmail:
 
         # if there are no (valid) credentials available, let the user log in
         if not creds or not creds.valid:
+
             if creds and creds.expired and creds.refresh_token:
                 creds.refresh(Request())
             else:
+                logger.info(f"please follow the auth flow for '{self.credentials_path}' now ...")
                 flow = InstalledAppFlow.from_client_secrets_file(
                     self.credentials_path,
                     [
