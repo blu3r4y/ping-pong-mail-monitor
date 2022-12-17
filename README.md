@@ -2,7 +2,7 @@
 
 [![AGPL 3.0 License](https://img.shields.io/badge/License-AGPL%203.0-yellow?style=popout-square)](LICENSE.txt)
 [![GitHub Latest Release](https://img.shields.io/github/v/release/blu3r4y/ping-pong-mail-monitor?style=popout-square)](https://github.com/blu3r4y/ping-pong-mail-monitor/releases/latest)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/blu3r4y/ping-pong-mail-monitor/build-container-images?style=popout-square)](https://github.com/blu3r4y/ping-pong-mail-monitor/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/blu3r4y/ping-pong-mail-monitor/build-container-images.yml?branch=v1.0.1&style=popout-square)](https://github.com/blu3r4y/ping-pong-mail-monitor/actions)
 [![Docker Pulls](https://img.shields.io/docker/pulls/blu3r4y/ping-pong-mail-monitor.svg?style=popout-square)](https://hub.docker.com/r/blu3r4y/ping-pong-mail-monitor)
 [![Docker Image Size](https://img.shields.io/docker/image-size/blu3r4y/ping-pong-mail-monitor?style=popout-square)](https://hub.docker.com/r/blu3r4y/ping-pong-mail-monitor)
 ![Supported Platforms](https://img.shields.io/badge/platforms-amd64%20%7C%20arm64-lightgrey?style=popout-square)
